@@ -3,7 +3,7 @@ import { createRouter, createWebHistory } from 'vue-router'
 const routes = [
 	{
 		path: "/",
-		redirect:'/login',
+		redirect:'/choose_robot',
 	},
 	{
 		path: '/login',
@@ -22,6 +22,12 @@ const routes = [
 		name: 'Chat',
 		component: () =>
 			import('@/components/ChatGPT')
+	},
+	{
+		path: '/choose_robot',
+		name: 'ChooseRobot',
+		component: () =>
+			import('@/components/ChooseRobot')
 	}
 ]
 

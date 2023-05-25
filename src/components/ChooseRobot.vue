@@ -1,0 +1,82 @@
+<template>
+  <div class="main-container">
+    <div class="top">
+      请选择需要的机器人
+    </div>
+    <div class="robot-container">
+      <router-link :to="{name:'Chat',query:{robot_type:robot.type}}" class="robot"
+                   v-for="robot in robot_types" v-bind:key="robot.type">
+        <img v-bind:src="robot.icon" class="icon"/>
+        <div class="text">{{ robot.name }}</div>
+      </router-link>
+    </div>
+
+  </div>
+</template>
+
+<script>
+	export default {
+		data() {
+			return {
+				robot_types: [
+					{
+						"icon": "https://cggptsc.blob.core.windows.net/frontend-icon/icon_help.png",
+            "name": "AI 助理",
+            "type": "assistant"
+          },
+					{
+						"icon": "https://cggptsc.blob.core.windows.net/frontend-icon/icon-analyze.png",
+						"name": "企业数据集成",
+						"type": "company_info"
+					},
+					{
+						"icon": "https://cggptsc.blob.core.windows.net/frontend-icon/icon-ppt.png",
+						"name": "数据分析",
+						"type": "analyze"
+					}
+        ]
+			}
+		}
+	}
+</script>
+
+<style scoped>
+  .top{
+    width: 100vw;
+    position: fixed;
+    top: 0;
+    left: 0;
+    padding: 10px 0 10px;
+    font-size: 14px;
+    border-bottom: 1px solid #f5f5f7;
+    background: #fff;
+    z-index: 9999;
+  }
+  .robot-container{
+    margin-top: 100px;
+    display: flex;
+    justify-content: center;
+    flex-wrap: wrap;
+  }
+  .robot{
+    width: 240px;
+    height: 60px;
+    line-height: 60px;
+    margin-top: 30px;
+    display: flex;
+    border: 1px solid #d4d4d4;
+    border-radius: 8px;
+    color: #404040;
+    text-decoration: none;
+  }
+  .icon{
+    width: 22px;
+    height: 22px;
+    margin-top: 18px;
+    margin-right: 14px;
+    margin-left: 10px;
+  }
+  .text{
+    font-size: 16px;
+  }
+</style>

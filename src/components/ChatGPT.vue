@@ -65,7 +65,7 @@
 			}
 		},
     mounted(){
-			this.getUseCount()
+			// this.getUseCount()
     },
 		watch: {
 			msglist: {
@@ -134,16 +134,16 @@
 								me: false
 							})
               this.use_count = this.use_count + 1
-            }else{
-							this.toast.info(res.Msg);
-							if(res.Msg == "User not logged in"){
-								this.router.push("/login")
-              }
+            // }else{
+						// 	this.toast.info(res.Msg);
+						// 	if(res.Msg == "User not logged in"){
+						// 		this.router.push("/login")
+            //   }
             }
 					})
-        }else{
-					this.toast.info("Please Login first");
-          this.router.push("/login")
+        // }else{
+				// 	this.toast.info("Please Login first");
+        //   this.router.push("/login")
         }
 			}
 		}

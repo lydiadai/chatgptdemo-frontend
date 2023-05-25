@@ -1,15 +1,18 @@
 <template>
-  <img alt="Vue logo" src="./assets/logo.png">
-  <HelloWorld msg="Welcome to Your Vue.js App"/>
+<!--  <Login msg="Welcome to Your Vue.js App"/>-->
+  <router-view />
+<!--  <chat-g-p-t />-->
 </template>
 
 <script>
-import HelloWorld from './components/HelloWorld.vue'
+// import Login from './components/LoginUser.vue'
+// import ChatGPT from './components/ChatGPT.vue'
 
 export default {
   name: 'App',
   components: {
-    HelloWorld
+		// Login
+		// ChatGPT
   }
 }
 </script>
@@ -21,6 +24,5 @@ export default {
   -moz-osx-font-smoothing: grayscale;
   text-align: center;
   color: #2c3e50;
-  margin-top: 60px;
 }
 </style>

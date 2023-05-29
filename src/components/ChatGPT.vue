@@ -19,7 +19,7 @@
       </ul>
     </div>
     <div class="bottom">
-      <div class="line"></div>
+<!--      <div class="line"></div>-->
       <div class="input-send">
         <div v-if="$route.query.robot_type == 'company_info'">
           <input type="file" id="company_file" name="company_file" accept=".pdf" multiple @change="changeFile"

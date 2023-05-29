@@ -7,8 +7,15 @@
         {{content}}
       </div>
       <img class="img" :src="content" v-else-if="type===2"/>
-      <div class="text" v-if="type===3" style="word-break: break-all;">
-        文件名：{{content}}
+      <div class="file" v-if="type===3">
+        <div style="padding: 6px; background: #FFF; display: flex;">
+          <img src="https://cggptsc.blob.core.windows.net/frontend-icon/icon-pdf.png"
+               style="width: 24px; height: 24px;display: block;margin-top: 2px;">
+          <div style="margin-left: 10px;">
+            {{content}}
+          </div>
+
+        </div>
       </div>
     </div>
   </div>
@@ -40,7 +47,7 @@
       margin-right: 10px;
       margin-top: 10px;
 
-      .text {
+      .text,.file {
         text-align: left;
         display: flex;
         flex-flow: row nowrap;
@@ -48,14 +55,15 @@
         height: auto;
         box-sizing: border-box;
         padding: 5px 12px 7px;
-        background: rgb(255, 255, 255);
         border-radius: 4px;
         margin: 5px 5px 5px auto;
         position: relative;
         background: #D2F9D1;
         filter: drop-shadow(rgba(0, 0, 0, 0.14) 0px 4px 8px) drop-shadow(rgba(0, 0, 0, 0.12) 0px 0px 2px);
       }
-
+      .file{
+        font-size: 14px;
+      }
       .img {
         width: 100px;
         border-bottom-right-radius: 10px;

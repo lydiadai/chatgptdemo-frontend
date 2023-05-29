@@ -1,7 +1,7 @@
 <template>
   <div class="container">
-<!--    <img class="head"-->
-<!--         src="https://dss0.bdstatic.com/70cFuHSh_Q1YnxGkpoWK1HF6hhy/it/u=1068485212,3292662520&fm=111&gp=0.jpg"/>-->
+    <img class="head"
+         src="https://cggptsc.blob.core.windows.net/frontend-icon/customer_avatar.png"/>
     <div class="content">
       <div class="text" v-if="type===1" style="word-break: break-all;">
         {{content}}
@@ -27,8 +27,8 @@
     flex-direction: row-reverse;
 
     .head {
-      width: 40px;
-      height: 40px;
+      width: 36px;
+      height: 36px;
       border-radius: 50%;
       border: 1px solid #eee;
     }
@@ -49,6 +49,7 @@
         border-radius: 4px;
         margin: 5px 5px 5px auto;
         position: relative;
+        background: #D2F9D1;
         filter: drop-shadow(rgba(0, 0, 0, 0.14) 0px 4px 8px) drop-shadow(rgba(0, 0, 0, 0.12) 0px 0px 2px);
       }
 

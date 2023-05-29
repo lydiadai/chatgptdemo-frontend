@@ -1,10 +1,13 @@
 <template>
   <div class="container">
     <div class="top">
+      <img src="https://cggptsc.blob.core.windows.net/frontend-icon/icon-back.png"
+           style="width: 20px;height: 20px;position: absolute;left: 20px;"
+           @click="$router.go(-1)"/>
       Azure Open AI ChatGpt Demo
-      <div style="text-align: right; color: #929292; padding-right: 14px;">
-        配额：{{use_count}}/{{all_count}}
-      </div>
+<!--      <div style="text-align: right; color: #929292; padding-right: 14px;">-->
+<!--        配额：{{use_count}}/{{all_count}}-->
+<!--      </div>-->
     </div>
     <div class="list" id="list" ref="list" >
       <ul id="chatContainer">
@@ -18,16 +21,21 @@
     <div class="bottom">
       <div class="line"></div>
       <div class="input-send">
+        <div v-if="$route.query.robot_type == 'company_info'">
+          <input type="file" id="company_file" name="company_file" accept=".pdf" multiple @change="changeFile">
+          <img class="uplod-file"
+                  src="https://cggptsc.blob.core.windows.net/frontend-icon/icon-back.png"/>
+        </div>
         <input v-model="text" placeholder="输入您的问题..." class="input" @keyup.enter="send"/>
         <button plain type="info" :class="text ? 'send' : 'cannotsend'" @click="send">发送</button>
 
       </div>
-      <div class="comment">
-        Copyright @ Cloud MS 团队，仅供内部试用
-        <div>
-          本站点前端由Open AI生成，人工校准。申请更多配额请联系：shuzhen.yu@capgemini.com
-        </div>
-      </div>
+<!--      <div class="comment">-->
+<!--        Copyright @ Cloud MS 团队，仅供内部试用-->
+<!--        <div>-->
+<!--          本站点前端由Open AI生成，人工校准。申请更多配额请联系：shuzhen.yu@capgemini.com-->
+<!--        </div>-->
+<!--      </div>-->
 
     </div>
 
@@ -49,13 +57,18 @@
 			const toast = useToast();
 			const router = useRouter();
 			// Make it available inside methods
+      // var query_params = router.currentRoute.value.query
+      // console.log(query_params)
+      // console.log(query_params.robot_type)
 			return { toast, router }
+
 		},
 		data: () => {
 			return {
 				text: '',
         all_count: 0,
         use_count: 0,
+        robot_type: "assistant",
 				msglist: [{
 					id: 1,
 					type: 1,
@@ -63,6 +76,12 @@
 					me: false
 				}]
 			}
+		},
+		beforeCreate() {
+			document.querySelector('body').setAttribute('style', 'background-color:#F2F4F6')
+		},
+		beforeUnmount() {
+			document.body.removeAttribute('style')
 		},
     mounted(){
 			// this.getUseCount()
@@ -102,10 +121,10 @@
       },
 			send() {
 				if (this.text) {
-					if (this.use_count >= this.all_count){
-						this.toast.info("配额不足")
-            return
-          }
+					// if (this.use_count >= this.all_count){
+					// 	this.toast.info("配额不足")
+          //   return
+          // }
 					this.msglist.push({
 						id: this.msglist[this.msglist.length - 1].id + 1,
 						type: 1,

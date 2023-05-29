@@ -4,6 +4,9 @@
       请选择需要的机器人
     </div>
     <div class="robot-container">
+      <div style="width: 100%; color: #404040; font-size: 26px;">
+        ChatGPT Bot
+      </div>
       <router-link :to="{name:'Chat',query:{robot_type:robot.type}}" class="robot"
                    v-for="robot in robot_types" v-bind:key="robot.type">
         <img v-bind:src="robot.icon" class="icon"/>

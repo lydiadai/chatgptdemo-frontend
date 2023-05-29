@@ -1,6 +1,6 @@
 <template>
   <div class="container">
-<!--    <img class="head" src="https://pp.myapp.com/ma_icon/0/icon_42284557_1517984341/96"/>-->
+    <img class="head" src="https://cggptsc.blob.core.windows.net/frontend-icon/GTP_avatar.png"/>
 
     <div class="content">
       <div class="text" v-if="type===1">
@@ -33,8 +33,8 @@
     margin-right: 60px;
 
     .head {
-      width: 40px;
-      height: 40px;
+      width: 36px;
+      height: 36px;
       border-radius: 50%;
       border: 1px solid #eee;
     }

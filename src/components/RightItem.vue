@@ -7,6 +7,9 @@
         {{content}}
       </div>
       <img class="img" :src="content" v-else-if="type===2"/>
+      <div class="text" v-if="type===3" style="word-break: break-all;">
+        文件名：{{content}}
+      </div>
     </div>
   </div>
 </template>

@@ -22,9 +22,11 @@
       <div class="line"></div>
       <div class="input-send">
         <div v-if="$route.query.robot_type == 'company_info'">
-          <input type="file" id="company_file" name="company_file" accept=".pdf" multiple @change="changeFile">
+          <input type="file" id="company_file" name="company_file" accept=".pdf" multiple @change="changeFile"
+                 style="display: none">
           <img class="uplod-file"
-                  src="https://cggptsc.blob.core.windows.net/frontend-icon/icon-back.png"/>
+                  src="https://cggptsc.blob.core.windows.net/frontend-icon/icon_upload.png"
+                @click="uploadFileTrigger"/>
         </div>
         <input v-model="text" placeholder="输入您的问题..." class="input" @keyup.enter="send"/>
         <button plain type="info" :class="text ? 'send' : 'cannotsend'" @click="send">发送</button>
@@ -49,6 +51,7 @@
 	import RightItem from "@/components/RightItem";
 	import { useToast } from "vue-toastification";
 	import { useRouter } from "vue-router";
+	import { BlobServiceClient } from "@azure/storage-blob";
 
 	export default {
 		components: {LeftItem, RightItem},
@@ -69,6 +72,7 @@
         all_count: 0,
         use_count: 0,
         robot_type: "assistant",
+        file_urls: [],
 				msglist: [{
 					id: 1,
 					type: 1,
@@ -99,6 +103,49 @@
 			}
 		},
 		methods: {
+			uploadFileTrigger(){
+				document.getElementById("company_file").click();
+      },
+			changeFile(event){
+				// capture file into state
+        console.log(event)
+        let files = event.target.files
+				for (var i = 0; i < files.length; i++) {
+					this.uploadFile(files[i]);
+				}
+
+			},
+			uploadFile(file){
+				const containerName = `gptfiles`;
+				const sasToken = "sv=2022-11-02&ss=bfqt&srt=sco&sp=rwdlacupiytfx&se=2025-05-29T15:09:48Z&st=2023-05-29T07:09:48Z&spr=https,http&sig=Mxa5vzLwIJ0tFojo8jZ3rSkNgNud3EwP2NmN9yyICpQ%3D";
+				const storageAccountName = "cggptsc";
+				const uploadUrl = `https://${storageAccountName}.blob.core.windows.net/?${sasToken}`;
+				console.log(uploadUrl);
+				const blobService = new BlobServiceClient(uploadUrl);
+				const containerClient =
+					blobService.getContainerClient(containerName);
+
+
+				// create blobClient for container
+				const blobClient = containerClient.getBlockBlobClient(file.name);
+
+				// set mimetype as determined from browser with file upload control
+				const options = { blobHTTPHeaders: { blobContentType: file.type } };
+
+				// upload file
+				blobClient.uploadData(file, options);
+				const file_url = `https://${storageAccountName}.blob.core.windows.net/${containerName}/${file.name}`;
+        console.log(file_url)
+        this.file_urls.push(file_url)
+        //TODO
+        //调用后端接口通知
+				this.msglist.push({
+					id: this.msglist[this.msglist.length - 1].id + 1,
+					type: 3,
+					content: file.name,
+					me: true
+				})
+      },
 			getUseCount(){
 				let username = localStorage.getItem("username")
 				if (username){
@@ -216,12 +263,19 @@
       .input-send {
         display: flex;
         justify-content: space-between;
-        background-color: #fff;
-        padding: 2px;
+        padding: 12px;
+        background: #F2F4F6;
+        img{
+          width: 38px;
+          height: 38px;
+        }
         .input {
           padding-right: 10px;
           width: 100%;
-          border: none;
+          height: 40px;
+          margin-left: 10px;
+          border: 1px solid #88CB7F;
+          border-radius: 8px;
           padding-left: 10px;
         }
         .send, .cannotsend {

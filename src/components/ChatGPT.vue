@@ -25,7 +25,7 @@
           <input type="file" id="company_file" name="company_file" accept=".pdf" multiple @change="changeFile"
                  style="display: none">
           <img class="uplod-file" style="margin-right: 10px;"
-                  src="https://cggptsc.blob.core.windows.net/frontend-icon/icon_upload.png"
+                  src="https://cggptsc.blob.core.windows.net/frontend-icon/icon-upload.png"
                 @click="uploadFileTrigger"/>
         </div>
         <div class="input-container" v-if="this.input_type == 'text'">
@@ -33,8 +33,8 @@
           <img src="https://cggptsc.blob.core.windows.net/frontend-icon/icon-mic.png" @click="toAudio" class="mic">
         </div>
         <div class="audio-container" v-if="this.input_type == 'audio'">
-          <img src="https://cggptsc.blob.core.windows.net/frontend-icon/icon-circlemic.png" @click="sttFromMic" class="mic">
-          <img src="https://cggptsc.blob.core.windows.net/frontend-icon/icon-keyboard.png" @click="toText" class="mic">
+          <img src="https://cggptsc.blob.core.windows.net/frontend-icon/icon-circlemic.png" @click="sttFromMic" class="circle-mic">
+          <img src="https://cggptsc.blob.core.windows.net/frontend-icon/icon-keyboard.png" @click="toText" class="keyboard">
         </div>
 
         <button plain type="info" :class="text ? 'send' : 'cannotsend'" @click="send" v-if="this.input_type == 'text'">
@@ -122,23 +122,31 @@
 				const speechConfig = speechsdk.SpeechConfig.fromAuthorizationToken(tokenObj.authToken, tokenObj.region);
 				speechConfig.speechRecognitionLanguage = 'en-US';
 
-				const audioConfig = speechsdk.AudioConfig.fromDefaultMicrophoneInput();
-				console.log(audioConfig)
-				const recognizer = new speechsdk.SpeechRecognizer(speechConfig, audioConfig);
-				console.log("111111111")
-				recognizer.recognizeOnceAsync(result => {
-					console.log("0000000")
-          console.log(result)
-					let displayText;
-					console.log(1)
-					if (result.reason === ResultReason.RecognizedSpeech) {
-						displayText = `RECOGNIZED: Text=${result.text}`
-					} else {
-						displayText = 'ERROR: Speech was cancelled or could not be recognized. Ensure your microphone is working properly.';
-					}
-          console.log(2)
-					console.log(displayText)
-				});
+        const constraints = { audio: true };
+        navigator.mediaDevices.getUserMedia(constraints).then(
+          stream => {
+						const audioConfig = speechsdk.AudioConfig.fromStreamInput(stream);
+						// const audioConfig = speechsdk.AudioConfig.fromDefaultMicrophoneInput();
+						const recognizer = new speechsdk.SpeechRecognizer(speechConfig, audioConfig);
+						recognizer.recognizeOnceAsync(result => {
+							let displayText;
+							if (result.reason === ResultReason.RecognizedSpeech) {
+								displayText = `${result.text}`
+							} else {
+								displayText = 'ERROR: Speech was cancelled or could not be recognized. Ensure your microphone is working properly.';
+							}
+							console.log(displayText)
+							this.text = displayText
+              this.send()
+						});
+            console.log("授权成功！");
+          },
+          () => {
+            console.error("授权失败！");
+          }
+        );
+
+
 			},
 			uploadFileTrigger(){
 				document.getElementById("company_file").click();
@@ -308,6 +316,21 @@
         justify-content: space-between;
         padding: 12px;
         background: #F2F4F6;
+        position: relative;
+        .circle-mic{
+          position: absolute;
+          left: calc((100vw - 50px)/2);
+          width: 50px;
+          height: 50px;
+          top: -6px;
+        }
+        .keyboard{
+          position: absolute;
+          right: 10px;
+          width: 30px;
+          height: 30px;
+          top: 18px;
+        }
         img{
           width: 38px;
           height: 38px;

@@ -7,7 +7,7 @@
       <div style="width: 100%; color: #404040; font-size: 26px;">
         ChatGPT Bot
       </div>
-      <router-link :to="{name:'Chat',query:{robot_type:robot.type}}" class="robot"
+      <router-link :to="{name:'Chat',query:{robot_type:robot.type, conversation_id: this.conversation_id}}" class="robot"
                    v-for="robot in robot_types" v-bind:key="robot.type">
         <img v-bind:src="robot.icon" class="icon"/>
         <div class="text">{{ robot.name }}</div>
@@ -21,6 +21,7 @@
 	export default {
 		data() {
 			return {
+				conversation_id: this.guid(),
 				robot_types: [
 					{
 						"icon": "https://cggptsc.blob.core.windows.net/frontend-icon/icon_help.png",
@@ -38,6 +39,14 @@
 						"type": "analyze"
 					}
         ]
+			}
+		},
+		methods: {
+			S4() {
+				return (((1+Math.random())*0x10000)|0).toString(16).substring(1);
+			},
+			guid() {
+				return (this.S4()+this.S4()+"-"+this.S4()+"-"+this.S4()+"-"+this.S4()+"-"+this.S4()+this.S4()+this.S4());
 			}
 		}
 	}

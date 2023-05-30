@@ -13,6 +13,8 @@
     "azure": "^2.3.1-preview",
     "core-js": "^3.8.3",
     "js-md5": "^0.7.3",
+    "microsoft-cognitiveservices-speech-sdk": "^1.28.0",
+    "universal-cookie": "^4.0.4",
     "vant": "^4.1.1",
     "vue": "^3.2.13",
     "vue-router": "^4.1.6",

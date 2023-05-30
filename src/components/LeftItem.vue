@@ -1,6 +1,6 @@
 <template>
   <div class="container">
-    <img class="head" src="https://cggptsc.blob.core.windows.net/frontend-icon/GTP_avatar.png"/>
+    <img class="head" src="https://cggptsc.blob.core.windows.net/frontend-icon/avatar_GTP.png"/>
 
     <div class="content">
       <div class="text" v-if="type===1">

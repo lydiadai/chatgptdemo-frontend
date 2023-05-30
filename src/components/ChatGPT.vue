@@ -24,12 +24,22 @@
         <div v-if="$route.query.robot_type == 'company_info'">
           <input type="file" id="company_file" name="company_file" accept=".pdf" multiple @change="changeFile"
                  style="display: none">
-          <img class="uplod-file"
+          <img class="uplod-file" style="margin-right: 10px;"
                   src="https://cggptsc.blob.core.windows.net/frontend-icon/icon_upload.png"
                 @click="uploadFileTrigger"/>
         </div>
-        <input v-model="text" placeholder="输入您的问题..." class="input" @keyup.enter="send"/>
-        <button plain type="info" :class="text ? 'send' : 'cannotsend'" @click="send">发送</button>
+        <div class="input-container" v-if="this.input_type == 'text'">
+          <input v-model="text" placeholder="输入您的问题..." class="input" @keyup.enter="send"/>
+          <img src="https://cggptsc.blob.core.windows.net/frontend-icon/icon-mic.png" @click="toAudio" class="mic">
+        </div>
+        <div class="audio-container" v-if="this.input_type == 'audio'">
+          <img src="https://cggptsc.blob.core.windows.net/frontend-icon/icon-circlemic.png" @click="sttFromMic" class="mic">
+          <img src="https://cggptsc.blob.core.windows.net/frontend-icon/icon-keyboard.png" @click="toText" class="mic">
+        </div>
+
+        <button plain type="info" :class="text ? 'send' : 'cannotsend'" @click="send" v-if="this.input_type == 'text'">
+          发送
+        </button>
 
       </div>
 <!--      <div class="comment">-->
@@ -52,6 +62,8 @@
 	import { useToast } from "vue-toastification";
 	import { useRouter } from "vue-router";
 	import { BlobServiceClient } from "@azure/storage-blob";
+	import { ResultReason } from 'microsoft-cognitiveservices-speech-sdk';
+	import { getTokenOrRefresh } from '../SpeechToken';
 
 	export default {
 		components: {LeftItem, RightItem},
@@ -73,6 +85,7 @@
         use_count: 0,
         robot_type: "assistant",
         file_urls: [],
+        input_type: "text",
 				msglist: [{
 					id: 1,
 					type: 1,
@@ -103,6 +116,30 @@
 			}
 		},
 		methods: {
+			async sttFromMic() {
+				const speechsdk = require('microsoft-cognitiveservices-speech-sdk')
+				const tokenObj = await getTokenOrRefresh();
+				const speechConfig = speechsdk.SpeechConfig.fromAuthorizationToken(tokenObj.authToken, tokenObj.region);
+				speechConfig.speechRecognitionLanguage = 'en-US';
+
+				const audioConfig = speechsdk.AudioConfig.fromDefaultMicrophoneInput();
+				console.log(audioConfig)
+				const recognizer = new speechsdk.SpeechRecognizer(speechConfig, audioConfig);
+				console.log("111111111")
+				recognizer.recognizeOnceAsync(result => {
+					console.log("0000000")
+          console.log(result)
+					let displayText;
+					console.log(1)
+					if (result.reason === ResultReason.RecognizedSpeech) {
+						displayText = `RECOGNIZED: Text=${result.text}`
+					} else {
+						displayText = 'ERROR: Speech was cancelled or could not be recognized. Ensure your microphone is working properly.';
+					}
+          console.log(2)
+					console.log(displayText)
+				});
+			},
 			uploadFileTrigger(){
 				document.getElementById("company_file").click();
       },
@@ -114,6 +151,12 @@
 					this.uploadFile(files[i]);
 				}
 
+			},
+      toAudio(){
+				this.input_type = 'audio'
+      },
+			toText(){
+				this.input_type = 'text'
 			},
 			uploadFile(file){
 				const containerName = `gptfiles`;
@@ -269,29 +312,40 @@
           width: 38px;
           height: 38px;
         }
-        .input {
-          padding-right: 10px;
+        .input-container{
+          position: relative;
           width: 100%;
-          height: 40px;
-          margin-left: 10px;
-          border: 1px solid #88CB7F;
-          border-radius: 8px;
-          padding-left: 10px;
+          .input {
+            width: 100%;
+            height: 36px;
+            border: 1px solid #51CF66;
+            border-radius: 8px;
+          }
+          .mic{
+            position: absolute;
+            right: -4px;
+            display: block;
+            top: 6px;
+            width: 28px;
+            height: 28px;
+          }
         }
+
         .send, .cannotsend {
-          min-width: 80px;
-          height: 32px;
-          border-radius: 2px;
+          min-width: 70px;
+          height: 36px;
+          border-radius: 8px;
           width: 80px;
+          margin-left: 12px;
         }
         .send{
-          background-color: #0795ff;
-          border: 1px solid #0795ff;
+          background-color: #51CF66;
+          border: 1px solid #51CF66;
           color: #fff;
         }
         .cannotsend{
-          background-color: rgb(243, 242, 241);
-          border: 1px solid rgb(243, 242, 241);
+          background-color: #eee;
+          border: 1px solid #eee;
           color: rgb(210, 208, 206);
         }
       }

@@ -1,7 +1,7 @@
 <template>
   <div class="container">
     <img class="head"
-         src="https://cggptsc.blob.core.windows.net/frontend-icon/customer_avatar.png"/>
+         src="https://cggptsc.blob.core.windows.net/frontend-icon/avatar_customer.png"/>
     <div class="content">
       <div class="text" v-if="type===1" style="word-break: break-all;">
         {{content}}

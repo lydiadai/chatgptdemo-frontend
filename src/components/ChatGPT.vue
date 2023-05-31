@@ -57,6 +57,7 @@
 <script>
 	import {getChatResponse} from "@/api/ApiChat";
 	import {CountInfo} from "@/api/CountInfo";
+	import {FileUpload} from "@/api/FileUpload"
 	import LeftItem from "@/components/LeftItem";
 	import RightItem from "@/components/RightItem";
 	import { useToast } from "vue-toastification";
@@ -76,7 +77,6 @@
       // console.log(query_params)
       // console.log(query_params.robot_type)
 			return { toast, router }
-
 		},
 		data: () => {
 			return {
@@ -187,13 +187,21 @@
 				const file_url = `https://${storageAccountName}.blob.core.windows.net/${containerName}/${file.name}`;
         console.log(file_url)
         this.file_urls.push(file_url)
-        //TODO
-        //调用后端接口通知
-				this.msglist.push({
-					id: this.msglist[this.msglist.length - 1].id + 1,
-					type: 3,
-					content: file.name,
-					me: true
+
+        this.toast("正在上传。。。", { id: "uploading", timeout: false });
+				var query_params = this.$router.currentRoute.value.query
+				FileUpload(this.file_urls, query_params.conversation_id).then(res => {
+					if (res.code == 200){
+						this.toast.update("uploading", { content: "上传成功", options: { timeout: 1000 } });
+						this.msglist.push({
+							id: this.msglist[this.msglist.length - 1].id + 1,
+							type: 3,
+							content: file.name,
+							me: true
+						})
+					}else{
+						this.toast.info(res.Msg);
+					}
 				})
       },
 			getUseCount(){

@@ -138,6 +138,7 @@
 							console.log(displayText)
 							this.text = displayText
               this.send()
+              recognizer.close()
 						});
             console.log("授权成功！");
           },
@@ -145,8 +146,6 @@
             console.error("授权失败！");
           }
         );
-
-
 			},
 			uploadFileTrigger(){
 				document.getElementById("company_file").click();

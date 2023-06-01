@@ -26,17 +26,17 @@
 					{
 						"icon": "https://cggptsc.blob.core.windows.net/frontend-icon/icon_help.png",
             "name": "AI 助理",
-            "type": "assistant"
+            "type": "AI"
           },
 					{
 						"icon": "https://cggptsc.blob.core.windows.net/frontend-icon/icon-analyze.png",
 						"name": "企业数据集成",
-						"type": "company_info"
+						"type": "DataIntegrate"
 					},
 					{
 						"icon": "https://cggptsc.blob.core.windows.net/frontend-icon/icon-ppt.png",
 						"name": "数据分析",
-						"type": "analyze"
+						"type": "DataAnalysis"
 					}
         ]
 			}

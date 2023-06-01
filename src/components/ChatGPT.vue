@@ -21,7 +21,7 @@
     <div class="bottom">
 <!--      <div class="line"></div>-->
       <div class="input-send">
-        <div v-if="$route.query.robot_type == 'company_info'">
+        <div v-if="$route.query.robot_type == 'DataIntegrate'">
           <input type="file" id="company_file" name="company_file" accept=".pdf" multiple @change="changeFile"
                  style="display: none">
           <img class="uplod-file" style="margin-right: 10px;"
@@ -56,6 +56,7 @@
 
 <script>
 	import {getChatResponse} from "@/api/ApiChat";
+	import {getChatResponseV2} from "@/api/ApiChatV2";
 	import {CountInfo} from "@/api/CountInfo";
 	import {FileUpload} from "@/api/FileUpload"
 	import LeftItem from "@/components/LeftItem";
@@ -117,27 +118,31 @@
 		},
 		methods: {
 			async sttFromMic() {
+				this.toast("正在开启麦克风", { id: "translating", timeout: false });
 				const speechsdk = require('microsoft-cognitiveservices-speech-sdk')
 				const tokenObj = await getTokenOrRefresh();
 				const speechConfig = speechsdk.SpeechConfig.fromAuthorizationToken(tokenObj.authToken, tokenObj.region);
-				speechConfig.speechRecognitionLanguage = 'en-US';
-
+				speechConfig.speechRecognitionLanguage = 'zh-CN';
         const constraints = { audio: true };
         navigator.mediaDevices.getUserMedia(constraints).then(
           stream => {
+						this.toast("请说话", { id: "translating", timeout: false });
 						const audioConfig = speechsdk.AudioConfig.fromStreamInput(stream);
 						// const audioConfig = speechsdk.AudioConfig.fromDefaultMicrophoneInput();
 						const recognizer = new speechsdk.SpeechRecognizer(speechConfig, audioConfig);
 						recognizer.recognizeOnceAsync(result => {
 							let displayText;
+							console.log(result.reason === ResultReason.RecognizedSpeech)
 							if (result.reason === ResultReason.RecognizedSpeech) {
 								displayText = `${result.text}`
+								this.toast.update("translating", { content: "识别成功", options: { timeout: 1000 } });
+								console.log(displayText)
+								this.text = displayText
+								this.send()
 							} else {
+								this.toast.update("translating", { content: "识别失败", options: { timeout: 1000 } });
 								displayText = 'ERROR: Speech was cancelled or could not be recognized. Ensure your microphone is working properly.';
 							}
-							console.log(displayText)
-							this.text = displayText
-              this.send()
               recognizer.close()
 						});
             console.log("授权成功！");
@@ -200,7 +205,7 @@
 							me: true
 						})
 					}else{
-						this.toast.info(res.Msg);
+						this.toast.update("uploading", { content: `上传失败：${res.message}`, options: { timeout: 1000 } });
 					}
 				})
       },
@@ -236,8 +241,11 @@
 						content: this.text,
 						me: true
 					})
-
-					this.getResponse(this.text)
+          if (Object.hasOwnProperty.call(this.$router.currentRoute.value.query,'robot_type') === true){
+						this.getResponse(this.text)
+          }else{
+						this.getResponseV2(this.text)
+          }
 
 					this.text = ''
 
@@ -245,16 +253,43 @@
 					this.toast.info("Please input your question.");
         }
 			},
+      getResponseV2(text){
+				// let username = localStorage.getItem("username")
+				// if (username){
+				let query_params = this.$router.currentRoute.value.query
+				getChatResponseV2(text, query_params.conversation_id).then(res => {
+					console.log(res)
+					if (res.code == 200){
+						this.msglist.push({
+							id: this.msglist[this.msglist.length - 1].id + 1,
+							type: 1,
+							content: res.content,
+							me: false
+						})
+						this.use_count = this.use_count + 1
+						// }else{
+						// 	this.toast.info(res.Msg);
+						// 	if(res.Msg == "User not logged in"){
+						// 		this.router.push("/login")
+						//   }
+					}
+				})
+				// }else{
+				// 	this.toast.info("Please Login first");
+				//   this.router.push("/login")
+				// }
+      },
 			getResponse(text) {
-				let username = localStorage.getItem("username")
-        if (username){
-					getChatResponse(text, username).then(res => {
+				// let username = localStorage.getItem("username")
+        // if (username){
+        let query_params = this.$router.currentRoute.value.query
+					getChatResponse(text, query_params.conversation_id, query_params.robot_type).then(res => {
 						console.log(res)
 						if (res.code == 200){
 							this.msglist.push({
 								id: this.msglist[this.msglist.length - 1].id + 1,
 								type: 1,
-								content: res.data.content,
+								content: res.content,
 								me: false
 							})
               this.use_count = this.use_count + 1
@@ -268,7 +303,7 @@
         // }else{
 				// 	this.toast.info("Please Login first");
         //   this.router.push("/login")
-        }
+        // }
 			}
 		}
 	}

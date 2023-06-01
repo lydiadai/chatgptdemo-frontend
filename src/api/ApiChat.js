@@ -1,6 +1,6 @@
 import request from "@/api/base/request";
 
-export function getChatResponse(text, username) {
+export function getChatResponse(text, conversation_id, robot_type) {
 	// return request({
 	// 	url: "https://openaiseandemo.openai.azure.com/openai/deployments/demo/chat/completions?api-version=2023-03-15-preview",
 	// 	method: 'post',
@@ -24,12 +24,13 @@ export function getChatResponse(text, username) {
 	// 	}
 	// })
 	return request({
-		url: "/chatgptCall",
+		url: "v1/message",
 		method: 'post',
 		timeout: 1000 * 60 *3,
 		data: {
-			"user_name": username,
-			"message": text
+			"conversation_id": conversation_id,
+			"message": text,
+			"robot_type": robot_type
 		}
 	})
 }

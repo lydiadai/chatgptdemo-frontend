@@ -119,32 +119,38 @@
 		methods: {
 			async sttFromMic() {
 				this.toast("正在开启麦克风", { id: "translating", timeout: false });
+
 				const speechsdk = require('microsoft-cognitiveservices-speech-sdk')
 				const tokenObj = await getTokenOrRefresh();
 				const speechConfig = speechsdk.SpeechConfig.fromAuthorizationToken(tokenObj.authToken, tokenObj.region);
-				speechConfig.speechRecognitionLanguage = 'zh-CN';
-        const constraints = { audio: true };
+				const constraints = { audio: true };
         navigator.mediaDevices.getUserMedia(constraints).then(
           stream => {
 						this.toast("请说话", { id: "translating", timeout: false });
-						const audioConfig = speechsdk.AudioConfig.fromStreamInput(stream);
-						// const audioConfig = speechsdk.AudioConfig.fromDefaultMicrophoneInput();
-						const recognizer = new speechsdk.SpeechRecognizer(speechConfig, audioConfig);
-						recognizer.recognizeOnceAsync(result => {
-							let displayText;
-							console.log(result.reason === ResultReason.RecognizedSpeech)
-							if (result.reason === ResultReason.RecognizedSpeech) {
-								displayText = `${result.text}`
-								this.toast.update("translating", { content: "识别成功", options: { timeout: 1000 } });
-								console.log(displayText)
-								this.text = displayText
-								this.send()
-							} else {
-								this.toast.update("translating", { content: "识别失败", options: { timeout: 1000 } });
-								displayText = 'ERROR: Speech was cancelled or could not be recognized. Ensure your microphone is working properly.';
-							}
-              recognizer.close()
-						});
+						var autoDetectSourceLanguageConfig = speechsdk.AutoDetectSourceLanguageConfig.fromLanguages(["en-US", "zh-CN"]);
+						var audioConfig = speechsdk.AudioConfig.fromStreamInput(stream);
+						var recognizer = speechsdk.SpeechRecognizer.FromConfig(speechConfig, autoDetectSourceLanguageConfig, audioConfig);
+            recognizer.recognizeOnceAsync(result => {
+								var languageDetectionResult = speechsdk.AutoDetectSourceLanguageResult.fromResult(result);
+								var detectedLanguage = languageDetectionResult.language;
+								console.log(`detectedLanguage========${detectedLanguage}`)
+
+								recognizer = new speechsdk.SpeechRecognizer(speechConfig, audioConfig);
+                let displayText = ""
+                if (result.reason === ResultReason.RecognizedSpeech) {
+                  displayText = `${result.text}`
+                  this.toast.update("translating", { content: "识别成功", options: { timeout: 1000 } });
+                  console.log(displayText)
+                  this.text = displayText
+                  this.send()
+                } else {
+                  this.toast.update("translating", { content: "识别失败, 请再说一遍", options: { timeout: 1000 } });
+                  displayText = 'ERROR: Speech was cancelled or could not be recognized. Ensure your microphone is working properly.';
+                }
+                recognizer.close()
+
+							},
+							{});
             console.log("授权成功！");
           },
           () => {
@@ -358,6 +364,7 @@
         justify-content: space-between;
         padding: 12px;
         background: #F2F4F6;
+        min-height: 40px;
         position: relative;
         .circle-mic{
           position: absolute;

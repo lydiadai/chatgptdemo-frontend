@@ -64,7 +64,7 @@
 						if (res.code && res.code == 200){
 							this.router.push("/login")
 						}else{
-							this.toast.info(res.Msg);
+							this.toast.info(res.message);
 						}
 					})
 				}else{

@@ -2,10 +2,10 @@ import request from "@/api/base/request";
 
 export function Login(username, password) {
 	return request({
-		url: "/loginChatgpt",
+		url: "/login",
 		method: 'post',
 		data: {
-			"user_name": username,
+			"username": username,
 			"password": password
 		}
 	})

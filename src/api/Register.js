@@ -2,10 +2,10 @@ import request from "@/api/base/request";
 
 export function Register(username, password, email) {
 	return request({
-		url: "/registerChatgpt",
+		url: "/register",
 		method: 'post',
 		data: {
-			"user_name": username,
+			"username": username,
 			"password": password,
 			"email": email
 		}

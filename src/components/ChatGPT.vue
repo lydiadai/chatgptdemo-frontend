@@ -5,9 +5,9 @@
            style="width: 20px;height: 20px;position: absolute;left: 20px;"
            @click="$router.go(-1)"/>
       Azure Open AI ChatGpt Demo
-<!--      <div style="text-align: right; color: #929292; padding-right: 14px;">-->
-<!--        配额：{{use_count}}/{{all_count}}-->
-<!--      </div>-->
+      <div style="text-align: right; color: #929292; padding-right: 14px;">
+        配额：{{use_count}}/{{all_count}}
+      </div>
     </div>
     <div class="list" id="list" ref="list" >
       <ul id="chatContainer">
@@ -29,7 +29,8 @@
                 @click="uploadFileTrigger"/>
         </div>
         <div class="input-container" v-if="this.input_type == 'text'">
-          <input v-model="text" placeholder="输入您的问题..." class="input" @keyup.enter="send"/>
+<!--          <input v-model="text" placeholder="输入您的问题..." class="input" @keyup.enter="send"/>-->
+          <input v-model="text" placeholder="输入您的问题..." class="input"/>
           <img src="https://cggptsc.blob.core.windows.net/frontend-icon/icon-mic.png" @click="toAudio" class="mic">
         </div>
         <div class="audio-container" v-if="this.input_type == 'audio'">
@@ -42,12 +43,12 @@
         </button>
 
       </div>
-<!--      <div class="comment">-->
-<!--        Copyright @ Cloud MS 团队，仅供内部试用-->
-<!--        <div>-->
-<!--          本站点前端由Open AI生成，人工校准。申请更多配额请联系：shuzhen.yu@capgemini.com-->
-<!--        </div>-->
-<!--      </div>-->
+      <div class="comment">
+        Copyright @ Cloud MS 团队，仅供内部试用
+        <div>
+          申请更多配额请联系：shuzhen.yu@capgemini.com
+        </div>
+      </div>
 
     </div>
 
@@ -87,12 +88,7 @@
         robot_type: "assistant",
         file_urls: [],
         input_type: "text",
-				msglist: [{
-					id: 1,
-					type: 1,
-					content: 'Hello, how may I assist you?',
-					me: false
-				}]
+				msglist: []
 			}
 		},
 		beforeCreate() {
@@ -102,7 +98,8 @@
 			document.body.removeAttribute('style')
 		},
     mounted(){
-			// this.getUseCount()
+			this.getUseCount()
+			this.changeFirstWord()
     },
 		watch: {
 			msglist: {
@@ -117,6 +114,46 @@
 			}
 		},
 		methods: {
+			changeFirstWord(){
+				if (Object.hasOwnProperty.call(this.$router.currentRoute.value.query,'robot_type') === true){
+					if (this.$router.currentRoute.value.query.robot_type == "AI"){
+						this.msglist.push({
+							id: 1,
+							type: 1,
+							content: "你好，我是通用GPT AI助理，可以根据我自己的知识回答您一些通用的问题；尝试如下的问题：\n" +
+								"请写一首春天的诗；猫熊和熊猫是一种动物吗？\n",
+							me: false
+						})
+          }else if (this.$router.currentRoute.value.query.robot_type == "DataIntegrate") {
+						this.msglist.push({
+							id: 1,
+							type: 1,
+							content: "你好，我是知识库AI助理。请您先点击左下角文件按钮上传一个文件，我将尽力回答您关于该文件的问题。\n" +
+								"此外我内置了特斯拉Model X的说明书，您可以尝试问以下问题：\n" +
+								"Model X的续航里程是多少？\n" +
+								"Model X有哪些驾驶模式可供选择？",
+							me: false
+						})
+					}else if (this.$router.currentRoute.value.query.robot_type == "DataAnalysis") {
+						this.msglist.push({
+							id: 1,
+							type: 1,
+							content: "您好，我是一位数据分析AI助理。我能够查询后台数据库中的数据并进行一些数据分析。需要注意的是，这个功能是根据特定的数据进行定制的。具体而言，我会将您输入的文本转换成SQL语句，然后查询数据库，将数据传递给AI模型，以对销售数据进行预测。您可以尝试问我以下问题：\n"+
+                        "2018年6月咖啡机的销量是多少？\n" +
+                        "请你预测一下2023年一年的咖啡机销量数据。",
+							me: false
+						})
+					}
+				}else{
+					this.msglist.push({
+						id: this.msglist[this.msglist.length - 1].id + 1,
+						type: 1,
+						content: "你好，我是通用GPT AI助理，可以根据我自己的知识回答您一些通用的问题；尝试如下的问题：\n" +
+							"请写一首春天的诗；猫熊和熊猫是一种动物吗？\n",
+						me: false
+					})
+				}
+      },
 			async sttFromMic() {
 				this.toast("正在开启麦克风", { id: "translating", timeout: false });
 
@@ -224,8 +261,8 @@
 							this.all_count = res.data.total_num
               this.use_count = res.data.count_used
 						}else{
-							this.toast.info(res.Msg);
-							if(res.Msg == "User not logged in"){
+							this.toast.info(res.message);
+							if(res.message == "User not logged in"){
 								this.router.push("/login")
 							}
 						}
@@ -237,10 +274,10 @@
       },
 			send() {
 				if (this.text) {
-					// if (this.use_count >= this.all_count){
-					// 	this.toast.info("配额不足")
-          //   return
-          // }
+					if (this.use_count >= this.all_count){
+						this.toast.info("配额不足")
+            return
+          }
 					this.msglist.push({
 						id: this.msglist[this.msglist.length - 1].id + 1,
 						type: 1,
@@ -260,56 +297,56 @@
         }
 			},
       getResponseV2(text){
-				// let username = localStorage.getItem("username")
-				// if (username){
-				let query_params = this.$router.currentRoute.value.query
-				getChatResponseV2(text, query_params.conversation_id).then(res => {
-					console.log(res)
-					if (res.code == 200){
-						this.msglist.push({
-							id: this.msglist[this.msglist.length - 1].id + 1,
-							type: 1,
-							content: res.content,
-							me: false
-						})
-						this.use_count = this.use_count + 1
-						// }else{
-						// 	this.toast.info(res.Msg);
-						// 	if(res.Msg == "User not logged in"){
-						// 		this.router.push("/login")
-						//   }
-					}
-				})
-				// }else{
-				// 	this.toast.info("Please Login first");
-				//   this.router.push("/login")
-				// }
+				let username = localStorage.getItem("username")
+				if (username){
+          let query_params = this.$router.currentRoute.value.query
+          getChatResponseV2(text, query_params.conversation_id).then(res => {
+            console.log(res)
+            if (res.code == 200){
+              this.msglist.push({
+                id: this.msglist[this.msglist.length - 1].id + 1,
+                type: 1,
+                content: res.content,
+                me: false
+              })
+              this.use_count = this.use_count + 1
+            }else{
+                this.toast.info(res.message);
+                if(res.message == "User not logged in"){
+                  this.router.push("/login")
+                }
+            }
+          })
+				}else{
+					this.toast.info("Please Login first");
+					this.router.push("/login")
+				}
       },
 			getResponse(text) {
-				// let username = localStorage.getItem("username")
-        // if (username){
-        let query_params = this.$router.currentRoute.value.query
-					getChatResponse(text, query_params.conversation_id, query_params.robot_type).then(res => {
-						console.log(res)
-						if (res.code == 200){
-							this.msglist.push({
-								id: this.msglist[this.msglist.length - 1].id + 1,
-								type: 1,
-								content: res.content,
-								me: false
-							})
-              this.use_count = this.use_count + 1
-            // }else{
-						// 	this.toast.info(res.Msg);
-						// 	if(res.Msg == "User not logged in"){
-						// 		this.router.push("/login")
-            //   }
-            }
-					})
-        // }else{
-				// 	this.toast.info("Please Login first");
-        //   this.router.push("/login")
-        // }
+				let username = localStorage.getItem("username")
+        if (username){
+          let query_params = this.$router.currentRoute.value.query
+            getChatResponse(text, query_params.conversation_id, query_params.robot_type).then(res => {
+              console.log(res)
+              if (res.code == 200){
+                this.msglist.push({
+                  id: this.msglist[this.msglist.length - 1].id + 1,
+                  type: 1,
+                  content: res.content,
+                  me: false
+                })
+                this.use_count = this.use_count + 1
+              }else{
+                this.toast.info(res.message);
+                if(res.message == "User not logged in"){
+                  this.router.push("/login")
+                }
+              }
+            })
+        }else{
+					this.toast.info("Please Login first");
+          this.router.push("/login")
+        }
 			}
 		}
 	}

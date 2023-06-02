@@ -25,7 +25,7 @@
 				robot_types: [
 					{
 						"icon": "https://cggptsc.blob.core.windows.net/frontend-icon/icon_help.png",
-            "name": "AI 助理",
+            "name": "通用AI助理",
             "type": "AI"
           },
 					{

@@ -55,6 +55,7 @@
         border-radius: 4px;
         margin: 5px 5px 5px auto;
         position: relative;
+        white-space: pre-line;
         filter: drop-shadow(rgba(0, 0, 0, 0.14) 0px 4px 8px) drop-shadow(rgba(0, 0, 0, 0.12) 0px 0px 2px);
       }
 

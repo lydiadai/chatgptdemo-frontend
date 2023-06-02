@@ -130,7 +130,7 @@
 						var autoDetectSourceLanguageConfig = speechsdk.AutoDetectSourceLanguageConfig.fromLanguages(["en-US", "zh-CN"]);
 						var audioConfig = speechsdk.AudioConfig.fromStreamInput(stream);
 						var recognizer = speechsdk.SpeechRecognizer.FromConfig(speechConfig, autoDetectSourceLanguageConfig, audioConfig);
-            recognizer.recognizeOnceAsync(result => {
+						recognizer.recognizeOnceAsync(result => {
 								var languageDetectionResult = speechsdk.AutoDetectSourceLanguageResult.fromResult(result);
 								var detectedLanguage = languageDetectionResult.language;
 								console.log(`detectedLanguage========${detectedLanguage}`)

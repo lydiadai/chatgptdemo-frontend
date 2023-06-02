@@ -121,7 +121,7 @@
 							id: 1,
 							type: 1,
 							content: "你好，我是通用GPT AI助理，可以根据我自己的知识回答您一些通用的问题；尝试如下的问题：\n" +
-								"请写一首春天的诗；猫熊和熊猫是一种动物吗？\n",
+								"请写一首春天的诗；\n猫熊和熊猫是一种动物吗？\n",
 							me: false
 						})
           }else if (this.$router.currentRoute.value.query.robot_type == "DataIntegrate") {
@@ -149,7 +149,7 @@
 						id: this.msglist[this.msglist.length - 1].id + 1,
 						type: 1,
 						content: "你好，我是通用GPT AI助理，可以根据我自己的知识回答您一些通用的问题；尝试如下的问题：\n" +
-							"请写一首春天的诗；猫熊和熊猫是一种动物吗？\n",
+							"请写一首春天的诗；\n猫熊和熊猫是一种动物吗？\n",
 						me: false
 					})
 				}
@@ -205,7 +205,6 @@
 				for (var i = 0; i < files.length; i++) {
 					this.uploadFile(files[i]);
 				}
-
 			},
       toAudio(){
 				this.input_type = 'audio'
@@ -258,8 +257,8 @@
 					CountInfo(username).then(res => {
 						console.log(res)
 						if (res.code == 200){
-							this.all_count = res.data.total_num
-              this.use_count = res.data.count_used
+							this.all_count = res.total_num
+              this.use_count = res.count_used
 						}else{
 							this.toast.info(res.message);
 							if(res.message == "User not logged in"){
@@ -284,8 +283,12 @@
 						content: this.text,
 						me: true
 					})
+
           if (Object.hasOwnProperty.call(this.$router.currentRoute.value.query,'robot_type') === true){
 						this.getResponse(this.text)
+						if (this.$router.currentRoute.value.query.robot_type == "DataAnalysis") {
+							this.toast("正在预测，请稍候。。。", { id: "predicting", timeout: false });
+						}
           }else{
 						this.getResponseV2(this.text)
           }
@@ -329,15 +332,40 @@
             getChatResponse(text, query_params.conversation_id, query_params.robot_type).then(res => {
               console.log(res)
               if (res.code == 200){
-                this.msglist.push({
-                  id: this.msglist[this.msglist.length - 1].id + 1,
-                  type: 1,
-                  content: res.content,
-                  me: false
-                })
-                this.use_count = this.use_count + 1
+								this.use_count = this.use_count + 1
+								if (this.$router.currentRoute.value.query.robot_type == "DataAnalysis") {
+									this.toast("预测成功", {id: "predicting", timeout: 1000});
+									let content = res.content
+									if (content.indexOf("预测") != -1 && content.indexOf("https") != -1){
+										let arr = content.split('https');
+										this.msglist.push({
+											id: this.msglist[this.msglist.length - 1].id + 1,
+											type: 1,
+											content: arr[0],
+											me: false
+										})
+										this.msglist.push({
+											id: this.msglist[this.msglist.length - 1].id + 1,
+											type: 2,
+											content: `https${arr[1]}`,
+											me: false
+										})
+										return
+									}
+								}
+								this.msglist.push({
+									id: this.msglist[this.msglist.length - 1].id + 1,
+									type: 1,
+									content: res.content,
+									me: false
+								})
               }else{
-                this.toast.info(res.message);
+								if (this.$router.currentRoute.value.query.robot_type == "DataAnalysis") {
+									this.toast(res.message, { id: "predicting", timeout: 1000 });
+								}else{
+									this.toast.info(res.message);
+                }
+
                 if(res.message == "User not logged in"){
                   this.router.push("/login")
                 }

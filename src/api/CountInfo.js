@@ -5,7 +5,7 @@ export function CountInfo(username) {
 		url: "/countInfo",
 		method: 'post',
 		data: {
-			"user_name": username
+			"username": username
 		}
 	})
 }

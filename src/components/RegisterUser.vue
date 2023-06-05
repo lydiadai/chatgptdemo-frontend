@@ -26,7 +26,7 @@
       <router-link to="/login" class="login-link">登录</router-link>
     </div>
     <div class="bottom">
-      Copyright @ Cloud MS 团队，仅供内部试用
+      Copyright @ Cloud 团队，仅供内部试用
     </div>
 
   </div>

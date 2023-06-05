@@ -7,9 +7,9 @@
       <div style="width: 100%; color: #404040; font-size: 26px;">
         ChatGPT Bot
       </div>
-      <router-link :to="{name:'Chat',query:{robot_type:robot.type, conversation_id: this.conversation_id}}" class="robot"
+      <router-link :to="{name:'Chat',query:{robot_type:robot.aiType, conversation_id: this.conversation_id}}" class="robot"
                    v-for="robot in robot_types" v-bind:key="robot.type">
-        <img v-bind:src="robot.icon" class="icon"/>
+        <img v-bind:src="robot.typeIcon" class="icon"/>
         <div class="text">{{ robot.name }}</div>
       </router-link>
     </div>
@@ -18,28 +18,40 @@
 </template>
 
 <script>
+	import {getAllRobot} from "@/api/AllRobot";
+	import { useToast } from "vue-toastification";
+	import { useRouter } from "vue-router";
 	export default {
+		setup() {
+			// Get toast interface
+			const toast = useToast();
+			const router = useRouter();
+			return { toast, router }
+		},
 		data() {
 			return {
 				conversation_id: this.guid(),
 				robot_types: [
-					{
-						"icon": "https://cggptsc.blob.core.windows.net/frontend-icon/icon_help.png",
-            "name": "通用AI助理",
-            "type": "AI"
-          },
-					{
-						"icon": "https://cggptsc.blob.core.windows.net/frontend-icon/icon-analyze.png",
-						"name": "企业数据集成",
-						"type": "DataIntegrate"
-					},
-					{
-						"icon": "https://cggptsc.blob.core.windows.net/frontend-icon/icon-ppt.png",
-						"name": "数据分析",
-						"type": "DataAnalysis"
-					}
-        ]
+					// {
+					// 	"typeIcon": "https://cggptsc.blob.core.windows.net/frontend-icon/icon_help.png",
+					// 	"name": "通用AI助理",
+					// 	"aiType": "AI"
+					// },
+					// {
+					// 	"typeIcon": "https://cggptsc.blob.core.windows.net/frontend-icon/icon-analyze.png",
+					// 	"name": "企业数据集成",
+					// 	"aiType": "DataIntegrate"
+					// },
+					// {
+					// 	"typeIcon": "https://cggptsc.blob.core.windows.net/frontend-icon/icon-ppt.png",
+					// 	"name": "数据分析",
+					// 	"aiType": "DataAnalysis"
+					// }
+				]
 			}
+		},
+		mounted(){
+			this.getRobotTypes()
 		},
 		methods: {
 			S4() {
@@ -47,7 +59,20 @@
 			},
 			guid() {
 				return (this.S4()+this.S4()+"-"+this.S4()+"-"+this.S4()+"-"+this.S4()+"-"+this.S4()+this.S4()+this.S4());
-			}
+			},
+      getRobotTypes(){
+        getAllRobot().then(res => {
+          console.log(res)
+          if (res.code == 200){
+            this.robot_types = res.data
+          }else{
+            this.toast.info(res.message);
+						if(res.message == "user not login"){
+							this.router.push("/login")
+						}
+          }
+        })
+      }
 		}
 	}
 </script>
@@ -80,6 +105,7 @@
     border-radius: 8px;
     color: #404040;
     text-decoration: none;
+    margin-right: 40px;
   }
   .icon{
     width: 22px;
@@ -90,5 +116,10 @@
   }
   .text{
     font-size: 16px;
+  }
+  @media (max-width: 767px){
+    .robot{
+      margin-right: 0;
+    }
   }
 </style>

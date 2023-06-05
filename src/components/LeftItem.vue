@@ -60,7 +60,7 @@
       }
 
       .img {
-        width: 100px;
+        width: 200px;
         border-bottom-right-radius: 10px;
         border-top-right-radius: 10px;
         border-bottom-left-radius: 10px;

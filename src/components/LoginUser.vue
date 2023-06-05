@@ -23,7 +23,7 @@
     </div>
 
     <div class="bottom">
-      Copyright @ Cloud MS 团队，仅供内部试用
+      Copyright @ Cloud 团队，仅供内部试用
     </div>
   </div>
 

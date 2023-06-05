@@ -44,9 +44,9 @@
 
       </div>
       <div class="comment">
-        Copyright @ Cloud MS 团队，仅供内部试用
+        Copyright @ Cloud 团队，仅供内部试用
         <div>
-          申请更多配额请联系：shuzhen.yu@capgemini.com
+          申请更多配额请联系：shuzhen.yu@foxmail.com
         </div>
       </div>
 
@@ -58,6 +58,7 @@
 <script>
 	import {getChatResponse} from "@/api/ApiChat";
 	import {getChatResponseV2} from "@/api/ApiChatV2";
+	import {getRobotGreeting} from "@/api/RobotGreeting";
 	import {CountInfo} from "@/api/CountInfo";
 	import {FileUpload} from "@/api/FileUpload"
 	import LeftItem from "@/components/LeftItem";
@@ -116,43 +117,69 @@
 		methods: {
 			changeFirstWord(){
 				if (Object.hasOwnProperty.call(this.$router.currentRoute.value.query,'robot_type') === true){
-					if (this.$router.currentRoute.value.query.robot_type == "AI"){
-						this.msglist.push({
-							id: 1,
-							type: 1,
-							content: "你好，我是通用GPT AI助理，可以根据我自己的知识回答您一些通用的问题；尝试如下的问题：\n" +
-								"请写一首春天的诗；\n猫熊和熊猫是一种动物吗？\n",
-							me: false
-						})
-          }else if (this.$router.currentRoute.value.query.robot_type == "DataIntegrate") {
-						this.msglist.push({
-							id: 1,
-							type: 1,
-							content: "你好，我是知识库AI助理。请您先点击左下角文件按钮上传一个文件，我将尽力回答您关于该文件的问题。\n" +
-								"此外我内置了特斯拉Model X的说明书，您可以尝试问以下问题：\n" +
-								"Model X的续航里程是多少？\n" +
-								"Model X有哪些驾驶模式可供选择？",
-							me: false
-						})
-					}else if (this.$router.currentRoute.value.query.robot_type == "DataAnalysis") {
-						this.msglist.push({
-							id: 1,
-							type: 1,
-							content: "您好，我是一位数据分析AI助理。我能够查询后台数据库中的数据并进行一些数据分析。需要注意的是，这个功能是根据特定的数据进行定制的。具体而言，我会将您输入的文本转换成SQL语句，然后查询数据库，将数据传递给AI模型，以对销售数据进行预测。您可以尝试问我以下问题：\n"+
-                        "2018年6月咖啡机的销量是多少？\n" +
-                        "请你预测一下2023年一年的咖啡机销量数据。",
-							me: false
-						})
-					}
-				}else{
-					this.msglist.push({
-						id: this.msglist[this.msglist.length - 1].id + 1,
-						type: 1,
-						content: "你好，我是通用GPT AI助理，可以根据我自己的知识回答您一些通用的问题；尝试如下的问题：\n" +
-							"请写一首春天的诗；\n猫熊和熊猫是一种动物吗？\n",
-						me: false
-					})
-				}
+          getRobotGreeting(this.$router.currentRoute.value.query.robot_type).then(res => {
+            console.log(res)
+            if (res.code == 200){
+							this.msglist.push({
+								id: 1,
+								type: 1,
+								content: res.greeting,
+								me: false
+							})
+            }else{
+              this.toast.info(res.message);
+              if(res.message == "user not login"){
+                this.router.push("/login")
+              }
+            }
+          })
+        }else{
+          this.msglist.push({
+            id: 1,
+            type: 1,
+            content: "你好，我是通用GPT AI助理，可以根据我自己的知识回答您一些通用的问题；尝试如下的问题：\n" +
+              "请写一首春天的诗；\n猫熊和熊猫是一种动物吗？\n",
+            me: false
+          })
+        }
+				// if (Object.hasOwnProperty.call(this.$router.currentRoute.value.query,'robot_type') === true){
+				// 	if (this.$router.currentRoute.value.query.robot_type == "AI"){
+				// 		this.msglist.push({
+				// 			id: 1,
+				// 			type: 1,
+				// 			content: "你好，我是通用GPT AI助理，可以根据我自己的知识回答您一些通用的问题；尝试如下的问题：\n" +
+				// 				"请写一首春天的诗；\n猫熊和熊猫是一种动物吗？\n",
+				// 			me: false
+				// 		})
+        //   }else if (this.$router.currentRoute.value.query.robot_type == "DataIntegrate") {
+				// 		this.msglist.push({
+				// 			id: 1,
+				// 			type: 1,
+				// 			content: "你好，我是知识库AI助理。请您先点击左下角文件按钮上传一个文件，我将尽力回答您关于该文件的问题。\n" +
+				// 				"此外我内置了特斯拉Model X的说明书，您可以尝试问以下问题：\n" +
+				// 				"Model X的续航里程是多少？\n" +
+				// 				"Model X有哪些驾驶模式可供选择？",
+				// 			me: false
+				// 		})
+				// 	}else if (this.$router.currentRoute.value.query.robot_type == "DataAnalysis") {
+				// 		this.msglist.push({
+				// 			id: 1,
+				// 			type: 1,
+				// 			content: "您好，我是一位数据分析AI助理。我能够查询后台数据库中的数据并进行一些数据分析。需要注意的是，这个功能是根据特定的数据进行定制的。具体而言，我会将您输入的文本转换成SQL语句，然后查询数据库，将数据传递给AI模型，以对销售数据进行预测。您可以尝试问我以下问题：\n"+
+        //                 "2018年6月咖啡机的销量是多少？\n" +
+        //                 "请你预测一下2023年一年的咖啡机销量数据。",
+				// 			me: false
+				// 		})
+				// 	}
+				// }else{
+				// 	this.msglist.push({
+				// 		id: 1,
+				// 		type: 1,
+				// 		content: "你好，我是通用GPT AI助理，可以根据我自己的知识回答您一些通用的问题；尝试如下的问题：\n" +
+				// 			"请写一首春天的诗；\n猫熊和熊猫是一种动物吗？\n",
+				// 		me: false
+				// 	})
+				// }
       },
 			async sttFromMic() {
 				this.toast("正在开启麦克风", { id: "translating", timeout: false });
@@ -336,7 +363,7 @@
 								if (this.$router.currentRoute.value.query.robot_type == "DataAnalysis") {
 									this.toast("预测成功", {id: "predicting", timeout: 1000});
 									let content = res.content
-									if (content.indexOf("预测") != -1 && content.indexOf("https") != -1){
+									if (content.indexOf("png") != -1 && content.indexOf("https") != -1){
 										let arr = content.split('https');
 										this.msglist.push({
 											id: this.msglist[this.msglist.length - 1].id + 1,

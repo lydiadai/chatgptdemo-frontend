@@ -6,8 +6,7 @@
       <div class="text" v-if="type===1">
         {{content}}
       </div>
-<!--      <img class="img" :src="content" v-else-if="type===2" @click="preview(content)"/>-->
-      <img class="img" src="https://avatars.githubusercontent.com/u/23027848?v=4" @click="preview('https://avatars.githubusercontent.com/u/23027848?v=4')"/>
+      <img class="img" :src="content" v-else-if="type===2" @click="preview(content)"/>
 
     </div>
 

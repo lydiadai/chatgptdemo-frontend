@@ -6,21 +6,47 @@
       <div class="text" v-if="type===1">
         {{content}}
       </div>
-      <img class="img" :src="content" v-else-if="type===2" @click="preview(content)"/>
+<!--      <img class="img" :src="content" v-else-if="type===2" @click="preview(content)"/>-->
+      <img class="img" src="https://avatars.githubusercontent.com/u/23027848?v=4" @click="preview('https://avatars.githubusercontent.com/u/23027848?v=4')"/>
+
     </div>
 
   </div>
 </template>
 
 <script>
-	import ImagePreview from "vant/lib/image-preview";
 
 	export default {
 		name: "LeftItem",
 		props: ['id', 'type', 'content'],
 		methods: {
-			preview(url){
-				ImagePreview([url])
+			preview(imageUrl){
+				const image = new Image();
+				image.src = imageUrl;
+				image.onload = () => {
+					// 创建弹出层
+					const previewContainer = document.createElement('div');
+					previewContainer.style.position = 'fixed';
+					previewContainer.style.top = 0;
+					previewContainer.style.bottom = 0;
+					previewContainer.style.left = 0;
+					previewContainer.style.right = 0;
+					previewContainer.style.backgroundColor = 'rgba(0,0,0,0.8)';
+					previewContainer.style.display = 'flex';
+					previewContainer.style.justifyContent = 'center';
+					previewContainer.style.alignItems = 'center';
+					document.body.appendChild(previewContainer);
+					// 在弹出层中添加图片
+					const previewImage = document.createElement('img');
+					previewImage.src = imageUrl;
+					previewImage.style.maxWidth = '80%';
+					previewImage.style.maxHeight = '80%';
+					previewContainer.appendChild(previewImage);
+					// 点击弹出层，关闭预览
+					previewContainer.addEventListener('click', () => {
+						document.body.removeChild(previewContainer);
+					});
+				};
 			}
 		}
 	}

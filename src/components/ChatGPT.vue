@@ -30,7 +30,7 @@
         </div>
         <div class="input-container" v-if="this.input_type == 'text'">
 <!--          <input v-model="text" placeholder="输入您的问题..." class="input" @keyup.enter="send"/>-->
-          <input v-model="text" placeholder="输入您的问题..." class="input"/>
+          <textarea v-model="text" placeholder="输入您的问题..." class="input"/>
           <img src="https://cggptsc.blob.core.windows.net/frontend-icon/icon-mic.png" @click="toAudio" class="mic">
         </div>
         <div class="audio-container" v-if="this.input_type == 'audio'">
@@ -484,6 +484,9 @@
             height: 36px;
             border: 1px solid #51CF66;
             border-radius: 8px;
+          }
+          .input::placeholder{
+            line-height: 36px;
           }
           .mic{
             position: absolute;

@@ -1,6 +1,6 @@
 import request from "@/api/base/request";
 
-export function getChatResponse(text, conversation_id, robot_type) {
+export function getChatResponse(text, conversation_id, robot_type, username) {
 	// return request({
 	// 	url: "https://openaiseandemo.openai.azure.com/openai/deployments/demo/chat/completions?api-version=2023-03-15-preview",
 	// 	method: 'post',
@@ -30,7 +30,8 @@ export function getChatResponse(text, conversation_id, robot_type) {
 		data: {
 			"conversation_id": conversation_id,
 			"message": text,
-			"robot_type": robot_type
+			"robot_type": robot_type,
+			"username": username
 		}
 	})
 }

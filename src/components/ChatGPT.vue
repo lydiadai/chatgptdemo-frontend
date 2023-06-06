@@ -2,12 +2,16 @@
   <div class="container">
     <div class="top">
       <img src="https://cggptsc.blob.core.windows.net/frontend-icon/icon-back.png"
-           style="width: 20px;height: 20px;position: absolute;left: 20px;"
+           style="width: 20px;height: 20px; display: block; margin-top: 4px;"
            @click="$router.go(-1)"/>
-      Azure Open AI ChatGpt Demo
-      <div style="text-align: right; color: #929292; padding-right: 14px;">
-        配额：{{use_count}}/{{all_count}}
+      <div class="right-part">
+        <div style="text-align: right; color: #929292; padding-right: 10px;">
+          配额：{{use_count}}/{{all_count}}
+        </div>
+        <img src="https://cggptsc.blob.core.windows.net/frontend-icon/icon-clear.png" class="clear"
+             @click="clearMessage()"/>
       </div>
+
     </div>
     <div class="list" id="list" ref="list" >
       <ul id="chatContainer">
@@ -59,6 +63,7 @@
 	import {getChatResponse} from "@/api/ApiChat";
 	import {getChatResponseV2} from "@/api/ApiChatV2";
 	import {getRobotGreeting} from "@/api/RobotGreeting";
+	import {clearMessage} from "@/api/ClearMessage";
 	import {CountInfo} from "@/api/CountInfo";
 	import {FileUpload} from "@/api/FileUpload"
 	import LeftItem from "@/components/LeftItem";
@@ -222,6 +227,26 @@
           }
         );
 			},
+			clearMessage(){
+				let username = localStorage.getItem("username")
+				if (username){
+					let query_params = this.$router.currentRoute.value.query
+					clearMessage(username, query_params.conversation_id).then(res => {
+						console.log(res)
+						if (res.code == 200){
+							this.msglist = []
+						}else{
+							this.toast.info(res.message);
+							if(res.message == "User not logged in"){
+								this.router.push("/login")
+							}
+						}
+					})
+				}else{
+					this.toast.info("Please Login first");
+					this.router.push("/login")
+				}
+      },
 			uploadFileTrigger(){
 				document.getElementById("company_file").click();
       },
@@ -356,7 +381,7 @@
 				let username = localStorage.getItem("username")
         if (username){
           let query_params = this.$router.currentRoute.value.query
-            getChatResponse(text, query_params.conversation_id, query_params.robot_type).then(res => {
+            getChatResponse(text, query_params.conversation_id, query_params.robot_type, username).then(res => {
               console.log(res)
               if (res.code == 200){
 								this.use_count = this.use_count + 1
@@ -424,15 +449,25 @@
       position: relative;
     }
     .top{
-      width: 100%;
+      width: calc(100% - 20px);
       position: fixed;
       top: 0;
       left: 0;
-      padding: 10px 0 6px;
-      font-size: 14px;
+      padding: 10px;
+      font-size: 16px;
       border-bottom: 1px solid #f5f5f7;
       background: #fff;
       z-index: 9999;
+      display: flex;
+      justify-content: space-between;
+      .right-part{
+        display: flex;
+        line-height: 28px;
+        .clear{
+          width: 28px;
+          height: 28px;
+        }
+      }
     }
     .bottom {
       width: 100%;

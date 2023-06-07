@@ -329,8 +329,12 @@
 						this.toast.info("配额不足")
             return
           }
+					let msgId = 1
+					if (this.msglist.length != 0){
+						msgId = this.msglist[this.msglist.length - 1].id + 1
+          }
 					this.msglist.push({
-						id: this.msglist[this.msglist.length - 1].id + 1,
+						id: msgId,
 						type: 1,
 						content: this.text,
 						me: true
@@ -525,11 +529,11 @@
           }
           .mic{
             position: absolute;
-            right: -4px;
+            right: 2px;
             display: block;
-            top: 6px;
-            width: 28px;
-            height: 28px;
+            top: 10px;
+            width: 16px;
+            height: 20px;
           }
         }
 
